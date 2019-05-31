@@ -1,0 +1,13 @@
+Package: reportcompiler.ic.tools
+Type: Package
+Title: Report Compiler Auxiliary Tools for HPV Information Centre
+Version: 0.1.0
+Author: David Gomez
+Maintainer: David Gomez <david.gomez.guillen@gmail.com>
+Description: Auxiliary tools for document generation in the HPV Information Centre, such as reference handling.
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Imports:
+  iterators
+RoxygenNote: 6.1.1
