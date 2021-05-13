@@ -189,20 +189,22 @@ generate.table.data <- function(data.dict,
                                selected.columns,
                                column.names) {
   column.markers <- list()
-  for(i in seq_along(selected.columns)) {
-    column <- selected.columns[i]
-    refs <- ref.data[ref.data$column == column, 'text']
-    col.markers <- c()
-    for(ref in refs) {
-      if (nrow(table.footer[[ref.type]][table.footer[[ref.type]][,'text']==ref,]) == 0) {
-        tryCatch(marker <- nextElem(markers), error=function(e) stop(paste0('No more "', ref.type, '" markers are available.')))
-        table.footer[[ref.type]] <- rbind(table.footer[[ref.type]], list(marker=marker, text=ref))
-      } else {
-        marker <- table.footer[[ref.type]][table.footer[[ref.type]][,'text']==ref,'marker'][[1]]
-      }
-      if (!(marker %in% col.markers)) col.markers <- c(col.markers, marker)
-    }
-    column.markers[[column]] <- c(column.markers[[column]], col.markers)
+  if (!is.null(ref.data) && length(ref.data) > 0) {
+	  for(i in seq_along(selected.columns)) {
+	    column <- selected.columns[i]
+	    refs <- ref.data[ref.data$column == column, 'text']
+	    col.markers <- c()
+	    for(ref in refs) {
+	      if (nrow(table.footer[[ref.type]][table.footer[[ref.type]][,'text']==ref,]) == 0) {
+		tryCatch(marker <- iterators::nextElem(markers), error=function(e) stop(paste0('No more "', ref.type, '" markers are available.')))
+		table.footer[[ref.type]] <- rbind(table.footer[[ref.type]], list(marker=marker, text=ref))
+	      } else {
+		marker <- table.footer[[ref.type]][table.footer[[ref.type]][,'text']==ref,'marker'][[1]]
+	      }
+	      if (!(marker %in% col.markers)) col.markers <- c(col.markers, marker)
+	    }
+	    column.markers[[column]] <- c(column.markers[[column]], col.markers)
+	  }
   }
   return(list(
     table.footer=table.footer[[ref.type]],
@@ -216,19 +218,21 @@ generate.table.data <- function(data.dict,
                             ref.type,
                             marker.data,
                             row.id.column) {
-  for(row.index in row.names(marker.data)) {
-    refs <- ref.data[ref.data$row == row.index, 'text']
-    for(ref in refs) {
-      row.markers <- marker.data[[row.index, row.id.column]]$markers
-      if (nrow(table.footer[[ref.type]][table.footer[[ref.type]][,'text']==ref,]) == 0) {
-        tryCatch(marker <- nextElem(markers), error=function(e) stop(paste0('No more "', ref.type, '" markers are available.')))
-        table.footer[[ref.type]] <- rbind(table.footer[[ref.type]], list(marker=marker, text=ref))
-      } else {
-        marker <- table.footer[[ref.type]][table.footer[[ref.type]][,'text']==ref,'marker'][[1]]
-      }
-      if (!(marker %in% row.markers))
-        marker.data[[row.index, row.id.column]]$markers <- c(row.markers, marker)
-    }
+  if (!is.null(ref.data) && length(ref.data) > 0) {
+	  for(row.index in row.names(marker.data)) {
+	    refs <- ref.data[ref.data$row == row.index, 'text']
+	    for(ref in refs) {
+	      row.markers <- marker.data[[row.index, row.id.column]]$markers
+	      if (nrow(table.footer[[ref.type]][table.footer[[ref.type]][,'text']==ref,]) == 0) {
+		tryCatch(marker <- iterators::nextElem(markers), error=function(e) stop(paste0('No more "', ref.type, '" markers are available.')))
+		table.footer[[ref.type]] <- rbind(table.footer[[ref.type]], list(marker=marker, text=ref))
+	      } else {
+		marker <- table.footer[[ref.type]][table.footer[[ref.type]][,'text']==ref,'marker'][[1]]
+	      }
+	      if (!(marker %in% row.markers))
+		marker.data[[row.index, row.id.column]]$markers <- c(row.markers, marker)
+	    }
+	  }
   }
   return(list(
     marker.data=marker.data,
@@ -241,20 +245,22 @@ generate.table.data <- function(data.dict,
                              markers,
                              ref.type,
                              marker.data) {
-  for(row.index in row.names(marker.data)) {
-    for(column in names(marker.data)) {
-      refs <- ref.data[ref.data$row == row.index && ref.data$column == column, 'text']
-      for(ref in refs) {
-        if (nrow(table.footer[[ref.type]][table.footer[[ref.type]][,'text']==ref,]) == 0) {
-          tryCatch(marker <- nextElem(markers), error=function(e) stop(paste0('No more "', ref.type, '" markers are available.')))
-          table.footer[[ref.type]] <- rbind(table.footer[[ref.type]], list(marker=marker, text=ref))
-        } else {
-          marker <- table.footer[[ref.type]][table.footer[[ref.type]][,'text']==ref,'marker'][[1]]
-        }
-        if (!(marker %in% marker.data[[row.index, column]]))
-          marker.data[[row.index, column]]$markers <- c(marker.data[[row.index, column]]$markers, marker)
-      }
-    }
+  if (!is.null(ref.data) && length(ref.data) > 0) {
+	  for(row.index in row.names(marker.data)) {
+	    for(column in names(marker.data)) {
+	      refs <- ref.data[ref.data$row == row.index && ref.data$column == column, 'text']
+	      for(ref in refs) {
+		if (nrow(table.footer[[ref.type]][table.footer[[ref.type]][,'text']==ref,]) == 0) {
+		  tryCatch(marker <- iterators::nextElem(markers), error=function(e) stop(paste0('No more "', ref.type, '" markers are available.')))
+		  table.footer[[ref.type]] <- rbind(table.footer[[ref.type]], list(marker=marker, text=ref))
+		} else {
+		  marker <- table.footer[[ref.type]][table.footer[[ref.type]][,'text']==ref,'marker'][[1]]
+		}
+		if (!(marker %in% marker.data[[row.index, column]]))
+		  marker.data[[row.index, column]]$markers <- c(marker.data[[row.index, column]]$markers, marker)
+	      }
+	    }
+	  }
   }
   return(list(
     marker.data=marker.data,
@@ -270,9 +276,9 @@ generate.table.data <- function(data.dict,
 #'
 #' @examples
 #' markers <- source.markers()
-#' nextElem(markers)
+#' iterators::nextElem(markers)
 #' # [1] '1'
-#' nextElem(markers)
+#' iterators::nextElem(markers)
 #' # [1] '2'
 #'
 #' @export
@@ -290,9 +296,9 @@ source.markers <- function() {
 #'
 #' @examples
 #' markers <- note.markers()
-#' nextElem(markers)
+#' iterators::nextElem(markers)
 #' # [1] 'a'
-#' nextElem(markers)
+#' iterators::nextElem(markers)
 #' # [1] 'b'
 #'
 #' @export
@@ -311,9 +317,9 @@ note.markers <- function() {
 #'
 #' @examples
 #' markers <- method.markers()
-#' nextElem(markers)
+#' iterators::nextElem(markers)
 #' # [1] '\\alpha'
-#' nextElem(markers)
+#' iterators::nextElem(markers)
 #' # [1] '\\beta'
 #'
 #' @export
@@ -338,9 +344,9 @@ method.markers <- function() {
 #'
 #' @examples
 #' markers <- year.markers()
-#' nextElem(markers)
+#' iterators::nextElem(markers)
 #' # [1] '\\Diamond'
-#' nextElem(markers)
+#' iterators::nextElem(markers)
 #' # [1] '\\triangle'
 #'
 #' @export
